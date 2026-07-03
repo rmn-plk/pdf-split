@@ -1,0 +1,23 @@
+node_modules/
+dist/
+
+# test artifacts
+*.pdf
+out/
+out-node/
+*-pages/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# env
+.env
+.env.*
+
+# logs
+*.log
+
+# IDE
+.idea/
+.vscode/
