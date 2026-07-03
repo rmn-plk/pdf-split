@@ -2,10 +2,19 @@
   "name": "pdf-split",
   "version": "1.0.0",
   "type": "module",
+  "bin": {
+    "pdf-split": "./dist/split.js"
+  },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "split": "bun run src/split.ts",
+    "start": "node dist/split.js"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
   },
   "devDependencies": {
+    "@types/bun": "latest",
     "@types/node": "^22.10.0",
     "typescript": "^5.7.2"
   }
