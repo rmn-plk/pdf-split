@@ -46,7 +46,7 @@ README.md
 ```
 CLI args → parseArgs() → splitPdf({ inputPath, outputDir })
                               ↓
-                    PDFDocument.load(bytes)
+        PDFDocument.load(bytes, { ignoreEncryption, throwOnInvalidObject: false })
                               ↓
               for each page: copyPages → save → {i+1}.pdf
 ```
@@ -64,6 +64,7 @@ CLI args → parseArgs() → splitPdf({ inputPath, outputDir })
 - Папка вывода: `dirname(input) / `${basename(input, '.pdf')}-pages``
 - Нумерация с 1, не с нуля
 - `mkdir(outputDir, { recursive: true })` перед записью
+- Загрузка PDF: `ignoreEncryption: true`, `throwOnInvalidObject: false` — лучшая совместимость с «мягко» зашифрованными и слегка битым файлами; пароль не запрашивается
 
 ## Соглашения при изменениях
 
@@ -95,4 +96,4 @@ node dist/split.js <file.pdf> [dir]
 - Диапазоны страниц (`--pages 1-5,10`)
 - Разбиение на K частей (не по одной странице)
 - Перезапись / dry-run флаги
-- Поддержка зашифрованных PDF
+- Поддержка PDF с паролем (расшифровка по паролю)

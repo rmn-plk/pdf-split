@@ -44,7 +44,12 @@ export async function splitPdf(options: SplitOptions): Promise<number> {
   const { inputPath, outputDir } = options;
 
   const bytes = await readFile(inputPath);
-  const source = await PDFDocument.load(bytes);
+
+  const source = await PDFDocument.load(bytes, {
+    ignoreEncryption: true,
+    throwOnInvalidObject: false,
+  });
+
   const pageCount = source.getPageCount();
 
   if (pageCount === 0) {
@@ -55,12 +60,12 @@ export async function splitPdf(options: SplitOptions): Promise<number> {
 
   for (let i = 0; i < pageCount; i++) {
     const newDoc = await PDFDocument.create();
+
     const [page] = await newDoc.copyPages(source, [i]);
     newDoc.addPage(page);
 
     const pdfBytes = await newDoc.save();
-    const outPath = join(outputDir, `${i + 1}.pdf`);
-    await writeFile(outPath, pdfBytes);
+    await writeFile(join(outputDir, `${i + 1}.pdf`), pdfBytes);
   }
 
   return pageCount;
