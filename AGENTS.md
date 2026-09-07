@@ -20,14 +20,14 @@
 
 ```bash
 bun install
-bun run split document.pdf [output-dir]
+bun run split document.pdf [output-dir] [--crop-top <mm>] [--crop-bottom <mm>]
 ```
 
 Для Node.js после изменений в коде:
 
 ```bash
 bun run build
-node dist/split.js document.pdf [output-dir]
+node dist/split.js document.pdf [output-dir] [--crop-top <mm>] [--crop-bottom <mm>]
 ```
 
 ## Структура репозитория
@@ -44,11 +44,11 @@ README.md
 ## Архитектура
 
 ```
-CLI args → parseArgs() → splitPdf({ inputPath, outputDir })
+CLI args → parseArgs() → splitPdf({ inputPath, outputDir, cropTopMm, cropBottomMm })
                               ↓
         PDFDocument.load(bytes, { ignoreEncryption, throwOnInvalidObject: false })
                               ↓
-              for each page: copyPages → save → {i+1}.pdf
+              for each page: copyPages → optional crop (CropBox/MediaBox) → save → {i+1}.pdf
 ```
 
 ### Ключевые точки
@@ -65,6 +65,7 @@ CLI args → parseArgs() → splitPdf({ inputPath, outputDir })
 - Нумерация с 1, не с нуля
 - `mkdir(outputDir, { recursive: true })` перед записью
 - Загрузка PDF: `ignoreEncryption: true`, `throwOnInvalidObject: false` — лучшая совместимость с «мягко» зашифрованными и слегка битым файлами; пароль не запрашивается
+- Обрезка: `--crop-top` / `--crop-bottom` в миллиметрах (по умолчанию `0`); мм → pt через `mm * 72 / 25.4`; после `copyPages` выставляются `setCropBox` и `setMediaBox` (origin снизу слева)
 
 ## Соглашения при изменениях
 
@@ -86,9 +87,9 @@ CLI args → parseArgs() → splitPdf({ inputPath, outputDir })
 
 ```bash
 bun install
-bun run split <file.pdf> [dir]
+bun run split <file.pdf> [dir] [--crop-top <mm>] [--crop-bottom <mm>]
 bun run build
-node dist/split.js <file.pdf> [dir]
+node dist/split.js <file.pdf> [dir] [--crop-top <mm>] [--crop-bottom <mm>]
 ```
 
 ## Возможные расширения (только по запросу)
@@ -97,3 +98,4 @@ node dist/split.js <file.pdf> [dir]
 - Разбиение на K частей (не по одной странице)
 - Перезапись / dry-run флаги
 - Поддержка PDF с паролем (расшифровка по паролю)
+- Обрезка слева/справа (`--crop-left` / `--crop-right`)

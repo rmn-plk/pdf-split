@@ -21,13 +21,13 @@ bun run build   # опционально, для node dist/split.js
 ### Bun
 
 ```bash
-bun run split <input.pdf> [output-dir]
+bun run split <input.pdf> [output-dir] [--crop-top <mm>] [--crop-bottom <mm>]
 ```
 
 ### Node.js
 
 ```bash
-node dist/split.js <input.pdf> [output-dir]
+node dist/split.js <input.pdf> [output-dir] [--crop-top <mm>] [--crop-bottom <mm>]
 ```
 
 ### Аргументы
@@ -37,6 +37,13 @@ node dist/split.js <input.pdf> [output-dir]
 | `input.pdf`   | Путь к исходному PDF |
 | `output-dir`  | Папка для результата (по умолчанию: `<имя-файла>-pages` рядом с исходником) |
 
+### Опции
+
+| Опция | Описание |
+|-------|----------|
+| `--crop-top <mm>` | Обрезать сверху каждую страницу на указанное число миллиметров (по умолчанию `0`) |
+| `--crop-bottom <mm>` | Обрезать снизу каждую страницу на указанное число миллиметров (по умолчанию `0`) |
+
 ### Примеры
 
 ```bash
@@ -45,6 +52,9 @@ bun run split document.pdf
 
 bun run split document.pdf ./pages
 # → ./pages/1.pdf, 2.pdf, …
+
+bun run split document.pdf ./pages --crop-top 15 --crop-bottom 20
+# → страницы обрезаны на 15 мм сверху и 20 мм снизу
 
 node dist/split.js report.pdf ./out
 ```
@@ -59,6 +69,8 @@ import { splitPdf } from "./split.js";
 const count = await splitPdf({
   inputPath: "document.pdf",
   outputDir: "./pages",
+  cropTopMm: 15,
+  cropBottomMm: 20,
 });
 console.log(`Создано файлов: ${count}`);
 ```
