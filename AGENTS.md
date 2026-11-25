@@ -1,36 +1,36 @@
 # AGENTS.md — pdf-split
 
-Руководство для AI-агентов, работающих с репозиторием **pdf-split** — CLI-утилита разбиения PDF по страницам.
+Guidance for AI agents working on the **pdf-split** repository — a CLI utility that splits PDFs by page.
 
-## О проекте
+## About the project
 
-**pdf-split** — небольшая утилита командной строки. Читает один PDF, создаёт N одностраничных файлов с именами `1.pdf` … `N.pdf`. Без UI, без сервера, без БД.
+**pdf-split** is a small command-line utility. It reads one PDF and creates N single-page files named `1.pdf` … `N.pdf`. No UI, no server, no DB.
 
-**Коммиты:** [Conventional Commits](https://www.conventionalcommits.org/) на английском (`feat:`, `fix:`, `docs:`).
+**Commits:** [Conventional Commits](https://www.conventionalcommits.org/) in English (`feat:`, `fix:`, `docs:`).
 
-## Стек
+## Stack
 
-| Слой | Технологии |
-|------|------------|
-| Runtime | Bun (dev), Node.js 18+ (prod) |
-| Язык | TypeScript 5, ESM (`"type": "module"`) |
-| PDF | [pdf-lib](https://pdf-lib.js.org/) |
+| Layer | Technologies |
+|---|---|
+|Runtime|Bun (dev), Node.js 18+ (prod)|
+|Language|TypeScript 5, ESM (`"type": "module"`)|
+|PDF|[pdf-lib](https://pdf-lib.js.org/)|
 
-## Быстрый старт
+## Quick start
 
 ```bash
 bun install
 bun run split document.pdf [output-dir] [--crop-top <mm>] [--crop-bottom <mm>]
 ```
 
-Для Node.js после изменений в коде:
+For Node.js after code changes:
 
 ```bash
 bun run build
 node dist/split.js document.pdf [output-dir] [--crop-top <mm>] [--crop-bottom <mm>]
 ```
 
-## Структура репозитория
+## Repository structure
 
 ```
 src/
@@ -41,7 +41,7 @@ tsconfig.json
 README.md
 ```
 
-## Архитектура
+## Architecture
 
 ```
 CLI args → parseArgs() → splitPdf({ inputPath, outputDir, cropTopMm, cropBottomMm })
@@ -51,39 +51,39 @@ CLI args → parseArgs() → splitPdf({ inputPath, outputDir, cropTopMm, cropBot
               for each page: copyPages → optional crop (CropBox/MediaBox) → save → {i+1}.pdf
 ```
 
-### Ключевые точки
+### Key points
 
-| Функция | Файл | Назначение |
-|---------|------|------------|
-| `splitPdf` | `src/split.ts` | Основная логика; экспортируется для переиспользования |
-| `parseArgs` | `src/split.ts` | Разбор `process.argv`, дефолтная папка `<name>-pages` |
-| `main` | `src/split.ts` | Точка входа CLI, код выхода 1 при ошибке |
+| Function | File | Purpose |
+|---|---|---|
+|`splitPdf`|`src/split.ts`|Core logic; exported for reuse|
+|`parseArgs`|`src/split.ts`|Parses `process.argv`, default output folder `<name>-pages`|
+|`main`|`src/split.ts`|CLI entry point, exit code 1 on error|
 
-### Поведение по умолчанию
+### Default behavior
 
-- Папка вывода: `dirname(input) / `${basename(input, '.pdf')}-pages``
-- Нумерация с 1, не с нуля
-- `mkdir(outputDir, { recursive: true })` перед записью
-- Загрузка PDF: `ignoreEncryption: true`, `throwOnInvalidObject: false` — лучшая совместимость с «мягко» зашифрованными и слегка битым файлами; пароль не запрашивается
-- Обрезка: `--crop-top` / `--crop-bottom` в миллиметрах (по умолчанию `0`); мм → pt через `mm * 72 / 25.4`; после `copyPages` выставляются `setCropBox` и `setMediaBox` (origin снизу слева)
+- Output folder: `dirname(input) / `${basename(input, '.pdf')}-pages``
+- Numbering starts at 1, not 0
+- `mkdir(outputDir, { recursive: true })` before writing
+- PDF loading: `ignoreEncryption: true`, `throwOnInvalidObject: false` — best compatibility with "softly" encrypted and slightly broken files; no password prompt
+- Cropping: `--crop-top` / `--crop-bottom` in millimeters (default `0`); mm → pt via `mm * 72 / 25.4`; after `copyPages`, `setCropBox` and `setMediaBox` are applied (origin at bottom-left)
 
-## Соглашения при изменениях
+## Conventions for changes
 
-- Минимальный diff — утилита намеренно простая
-- Не добавлять UI, веб-сервер, тестовый фреймворк без явного запроса
-- PDF-операции только через `pdf-lib`; не тянуть тяжёлые нативные зависимости без причины
-- `splitPdf` оставлять экспортируемой — CLI и библиотечное использование в одном файле
-- Пути резолвить через `node:path` (`resolve`, `join`)
-- Файловая I/O — `node:fs/promises`
+- Minimal diff — the utility is intentionally simple
+- No UI, web server, or test framework without an explicit request
+- PDF operations only via `pdf-lib`; don't pull heavy native dependencies without a reason
+- Keep `splitPdf` exported — CLI and library usage in one file
+- Resolve paths via `node:path` (`resolve`, `join`)
+- File I/O via `node:fs/promises`
 
-## Чего не делать
+## What not to do
 
-- Не менять схему имён (`1.pdf` … `N.pdf`) без согласования
-- Не коммитить `node_modules/`, `dist/`, тестовые PDF и артефакты (`out/`, `*-pages/`)
-- Не добавлять Tailwind, React и прочий frontend-стек — проект CLI-only
-- Не усложнять парсинг аргументов (yargs/commander) без запроса пользователя
+- Don't change the naming scheme (`1.pdf` … `N.pdf`) without agreement
+- Don't commit `node_modules/`, `dist/`, test PDFs, or artifacts (`out/`, `*-pages/`)
+- Don't add Tailwind, React, or other frontend stack — the project is CLI-only
+- Don't complicate argument parsing (yargs/commander) without a user request
 
-## Полезные команды
+## Useful commands
 
 ```bash
 bun install
@@ -92,10 +92,10 @@ bun run build
 node dist/split.js <file.pdf> [dir] [--crop-top <mm>] [--crop-bottom <mm>]
 ```
 
-## Возможные расширения (только по запросу)
+## Possible extensions (on request only)
 
-- Диапазоны страниц (`--pages 1-5,10`)
-- Разбиение на K частей (не по одной странице)
-- Перезапись / dry-run флаги
-- Поддержка PDF с паролем (расшифровка по паролю)
-- Обрезка слева/справа (`--crop-left` / `--crop-right`)
+- Page ranges (`--pages 1-5,10`)
+- Splitting into K parts (not one page each)
+- Overwrite / dry-run flags
+- Password-protected PDF support (decryption by password)
+- Left/right cropping (`--crop-left` / `--crop-right`)

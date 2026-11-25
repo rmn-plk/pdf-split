@@ -1,22 +1,22 @@
 # pdf-split
 
-CLI-утилита на TypeScript для разбиения PDF на отдельные файлы — по одной странице в каждом. Результат: `1.pdf`, `2.pdf`, … `N.pdf`, где **N** — число страниц исходного документа.
+TypeScript CLI utility that splits a PDF into separate files — one page each. Output: `1.pdf`, `2.pdf`, … `N.pdf`, where **N** is the number of pages in the source document.
 
-Работает через **Bun** (разработка) и **Node.js** (сборка).
+Runs via **Bun** (development) and **Node.js** (built output).
 
-## Требования
+## Requirements
 
-- [Bun](https://bun.sh/) 1.x — для локального запуска без сборки
-- [Node.js](https://nodejs.org/) 18+ — для запуска скомпилированного `dist/`
+- [Bun](https://bun.sh/) 1.x — to run locally without building
+- [Node.js](https://nodejs.org/) 18+ — to run the compiled `dist/`
 
-## Установка
+## Installation
 
 ```bash
 bun install
-bun run build   # опционально, для node dist/split.js
+bun run build   # optional, for node dist/split.js
 ```
 
-## Использование
+## Usage
 
 ### Bun
 
@@ -30,21 +30,21 @@ bun run split <input.pdf> [output-dir] [--crop-top <mm>] [--crop-bottom <mm>]
 node dist/split.js <input.pdf> [output-dir] [--crop-top <mm>] [--crop-bottom <mm>]
 ```
 
-### Аргументы
+### Arguments
 
-| Аргумент      | Описание |
-|---------------|----------|
-| `input.pdf`   | Путь к исходному PDF |
-| `output-dir`  | Папка для результата (по умолчанию: `<имя-файла>-pages` рядом с исходником) |
+| Argument      | Description |
+|---------------|-------------|
+| `input.pdf`   | Path to the source PDF |
+| `output-dir`  | Output folder (default: `<file-name>-pages` next to the source file) |
 
-### Опции
+### Options
 
-| Опция | Описание |
-|-------|----------|
-| `--crop-top <mm>` | Обрезать сверху каждую страницу на указанное число миллиметров (по умолчанию `0`) |
-| `--crop-bottom <mm>` | Обрезать снизу каждую страницу на указанное число миллиметров (по умолчанию `0`) |
+| Option | Description |
+|--------|-------------|
+| `--crop-top <mm>` | Crop each page from the top by the given number of millimeters (default `0`) |
+| `--crop-bottom <mm>` | Crop each page from the bottom by the given number of millimeters (default `0`) |
 
-### Примеры
+### Examples
 
 ```bash
 bun run split document.pdf
@@ -54,14 +54,14 @@ bun run split document.pdf ./pages
 # → ./pages/1.pdf, 2.pdf, …
 
 bun run split document.pdf ./pages --crop-top 15 --crop-bottom 20
-# → страницы обрезаны на 15 мм сверху и 20 мм снизу
+# → pages cropped 15 mm from the top and 20 mm from the bottom
 
 node dist/split.js report.pdf ./out
 ```
 
-## Программный API
+## Programmatic API
 
-Функция `splitPdf` экспортируется из `src/split.ts` и возвращает количество созданных файлов:
+The `splitPdf` function is exported from `src/split.ts` and returns the number of files created:
 
 ```ts
 import { splitPdf } from "./split.js";
@@ -72,35 +72,35 @@ const count = await splitPdf({
   cropTopMm: 15,
   cropBottomMm: 20,
 });
-console.log(`Создано файлов: ${count}`);
+console.log(`Files created: ${count}`);
 ```
 
-## Скрипты
+## Scripts
 
-| Команда        | Описание |
-|----------------|----------|
-| `bun run split` | Запуск CLI через Bun (`src/split.ts`) |
-| `bun run build` | Компиляция TypeScript → `dist/` |
-| `bun run start` | Запуск `dist/split.js` через Node |
+| Command        | Description |
+|----------------|-------------|
+| `bun run split` | Run the CLI via Bun (`src/split.ts`) |
+| `bun run build` | Compile TypeScript → `dist/` |
+| `bun run start` | Run `dist/split.js` via Node |
 
-## Стек
+## Stack
 
 - TypeScript 5
-- [pdf-lib](https://pdf-lib.js.org/) — чтение и запись PDF
+- [pdf-lib](https://pdf-lib.js.org/) — PDF reading and writing
 - Bun / Node.js ESM (`"type": "module"`)
 
-## Структура
+## Structure
 
 ```
 src/
-  split.ts      # CLI и splitPdf()
-dist/           # сборка tsc (в .gitignore)
+  split.ts      # CLI and splitPdf()
+dist/           # tsc build output (gitignored)
 package.json
 tsconfig.json
 ```
 
-## Ограничения
+## Limitations
 
-- Каждая страница сохраняется в отдельный одностраничный PDF
-- Имена файлов всегда числовые: `1.pdf` … `N.pdf`
-- PDF с паролем не поддерживаются; файлы с флагом шифрования без пароля и с мелкими повреждениями структуры могут открываться за счёт мягких опций загрузки pdf-lib
+- Each page is saved as a separate single-page PDF
+- File names are always numeric: `1.pdf` … `N.pdf`
+- Password-protected PDFs are not supported; files with an encryption flag but no password, and files with minor structural damage, may still open thanks to pdf-lib's lenient loading options
